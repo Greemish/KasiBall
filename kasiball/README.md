@@ -23,11 +23,13 @@ KasiBall is a Next.js football league management application for administration,
 
 ## Scripts
 
-- npm run dev — start the app in development mode
-- npm run build — build the app for production
-- npm run start — run the production build
-- npm run lint — run lint checks
+- Start the app in development mode:
+     npm run dev 
+- Build the app for production:
+     npm run build
+- Run the production build:
+     npm run start 
+- run lint checks:
+      npm run lint
 
-## Notes
 
-This repository is intentionally scaffolded as a starter structure for the KasiBall platform and can be expanded with real business logic, database models, and UI components.
