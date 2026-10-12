@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-white text-kasi-ink antialiased;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-kasi-gold ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Layout */
+  .container-max {
+    @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Panels */
+  .card {
+    @apply rounded-lg border border-kasi-border bg-white p-5 shadow-sm;
+  }
+
+  /* Section label */
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-wide text-kasi-green;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded px-4 py-2 text-sm font-semibold transition focus:outline-none disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply btn bg-kasi-green text-white hover:bg-kasi-green-dark;
+  }
+  .btn-secondary {
+    @apply btn border border-kasi-green text-kasi-green hover:bg-kasi-green hover:text-white;
+  }
+  .btn-gold {
+    @apply btn bg-kasi-gold text-kasi-ink hover:bg-kasi-gold-dark;
+  }
+  .btn-ghost {
+    @apply btn text-kasi-ink hover:bg-kasi-surface;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+
+  /* Tables */
+  .table-base {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .table-base thead th {
+    @apply border-b border-kasi-border bg-kasi-surface px-3 py-2 font-semibold text-kasi-ink;
+  }
+  .table-base tbody td {
+    @apply border-b border-kasi-border px-3 py-2 align-middle;
+  }
+  .table-base tbody tr:hover {
+    @apply bg-kasi-surface/60;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-verified  { @apply badge bg-green-100 text-green-800; }
+  .badge-pending   { @apply badge bg-amber-100 text-amber-800; }
+  .badge-danger    { @apply badge bg-red-100 text-red-800; }
+  .badge-neutral   { @apply badge bg-gray-100 text-gray-700; }
+  .badge-info      { @apply badge bg-blue-100 text-blue-800; }
+
+  /* Forms */
+  .form-field { @apply flex flex-col gap-1; }
+  .form-label { @apply text-sm font-medium text-kasi-ink; }
+  .form-input {
+    @apply w-full rounded border border-kasi-border bg-white px-3 py-2 text-sm focus:border-kasi-green focus:outline-none focus:ring-1 focus:ring-kasi-green;
+  }
+  .form-error { @apply text-xs text-red-600; }
+}

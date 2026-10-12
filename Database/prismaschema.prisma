@@ -1,0 +1,607 @@
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  REFEREE
+}
+
+enum SeasonStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+}
+
+enum TeamStatus {
+  PENDING
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  INACTIVE
+}
+
+enum ApplicationStatus {
+  PENDING
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum FixtureStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  FORFEITED
+  CANCELLED
+  POSTPONED
+  ABANDONED
+  NO_RESULT
+}
+
+enum MatchStatus {
+  IN_PROGRESS
+  COMPLETED
+  FORFEITED
+  ABANDONED
+  NO_RESULT
+}
+
+enum MatchEventType {
+  GOAL
+  YELLOW_CARD
+  RED_CARD
+  OWN_GOAL
+}
+
+enum DocumentType {
+  IDENTITY_DOCUMENT
+  BIRTH_CERTIFICATE
+  PROOF_OF_AGE
+  MEDICAL_DOCUMENT
+  CONSENT_FORM
+  OTHER
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+  VERIFY
+  LOGIN
+  LOGOUT
+  GENERATE_FIXTURES
+  ASSIGN_REFEREE
+  SUBMIT_RESULT
+}
+
+
+// ============================================================
+// USER
+// ============================================================
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole
+  isActive     Boolean  @default(true) @map("is_active")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  manager      Manager?
+  referee      Referee?
+
+  auditLogs    AuditLog[]
+
+  @@index([role])
+  @@index([isActive])
+  @@map("user")
+}
+
+
+// ============================================================
+// MANAGER
+// ============================================================
+
+model Manager {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
+
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  phone     String?
+  address   String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teams            Team[]
+  teamApplications TeamApplication[]
+
+  @@map("manager")
+}
+
+
+// ============================================================
+// REFEREE
+// ============================================================
+
+model Referee {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @unique @map("user_id") @db.Uuid
+
+  firstName     String   @map("first_name")
+  lastName      String   @map("last_name")
+  phone         String?
+  licenseNumber String?  @unique @map("license_number")
+  isActive      Boolean  @default(true) @map("is_active")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fixtures Fixture[]
+
+  @@index([isActive])
+  @@map("referee")
+}
+
+
+// ============================================================
+// SEASON
+// ============================================================
+
+model Season {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String       @unique
+
+  startDate DateTime     @map("start_date") @db.Date
+  endDate   DateTime     @map("end_date") @db.Date
+  status    SeasonStatus @default(PLANNED)
+
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  ageGroups          AgeGroup[]
+  playerRegistrations PlayerRegistration[]
+  fixtures            Fixture[]
+
+  @@index([status])
+  @@map("season")
+}
+
+
+// ============================================================
+// AGE GROUP
+// ============================================================
+
+model AgeGroup {
+  id        String   @id @default(uuid()) @db.Uuid
+  seasonId  String   @map("season_id") @db.Uuid
+
+  name      String
+  minAge    Int      @map("min_age")
+  maxAge    Int      @map("max_age")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  season           Season           @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  teams            Team[]
+  teamApplications TeamApplication[]
+  fixtures         Fixture[]
+
+  @@unique([seasonId, name])
+  @@index([seasonId])
+  @@map("age_group")
+}
+
+
+// ============================================================
+// TEAM
+// ============================================================
+
+model Team {
+  id         String     @id @default(uuid()) @db.Uuid
+
+  name       String
+  shortName  String?    @map("short_name")
+
+  managerId  String     @map("manager_id") @db.Uuid
+  ageGroupId String     @map("age_group_id") @db.Uuid
+
+  logoUrl    String?    @map("logo_url")
+  status     TeamStatus @default(PENDING)
+
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  manager              Manager              @relation(fields: [managerId], references: [id])
+  ageGroup             AgeGroup             @relation(fields: [ageGroupId], references: [id])
+
+  playerRegistrations  PlayerRegistration[]
+
+  homeFixtures          Fixture[] @relation("HomeTeam")
+  awayFixtures          Fixture[] @relation("AwayTeam")
+
+  matchdaySquads        MatchdaySquad[]
+  matchEvents           MatchEvent[]
+  forfeits              Forfeit[]
+
+  approvedApplication   TeamApplication? @relation("ApprovedTeam")
+
+  @@unique([ageGroupId, name])
+  @@index([managerId])
+  @@index([ageGroupId])
+  @@index([status])
+  @@map("team")
+}
+
+
+// ============================================================
+// TEAM APPLICATION
+// ============================================================
+
+model TeamApplication {
+  id              String            @id @default(uuid()) @db.Uuid
+
+  managerId       String            @map("manager_id") @db.Uuid
+  ageGroupId      String            @map("age_group_id") @db.Uuid
+
+  teamName        String            @map("team_name")
+  kitDescription  String?           @map("kit_description")
+  notes           String?
+
+  status          ApplicationStatus @default(PENDING)
+  reviewNotes     String?           @map("review_notes")
+
+  submittedAt     DateTime          @default(now()) @map("submitted_at")
+  reviewedAt      DateTime?         @map("reviewed_at")
+
+  reviewedBy      String?           @map("reviewed_by") @db.Uuid
+  approvedTeamId  String?           @unique @map("approved_team_id") @db.Uuid
+
+  manager         Manager           @relation(fields: [managerId], references: [id])
+  ageGroup        AgeGroup          @relation(fields: [ageGroupId], references: [id])
+
+  approvedTeam    Team?             @relation("ApprovedTeam", fields: [approvedTeamId], references: [id])
+
+  @@index([managerId])
+  @@index([ageGroupId])
+  @@index([status])
+  @@map("team_application")
+}
+
+
+// ============================================================
+// PLAYER
+// ============================================================
+
+model Player {
+  id          String   @id @default(uuid()) @db.Uuid
+
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  dateOfBirth DateTime @map("date_of_birth") @db.Date
+
+  photoUrl    String?  @map("photo_url")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  registrations PlayerRegistration[]
+
+  @@index([lastName, firstName])
+  @@map("player")
+}
+
+
+// ============================================================
+// PLAYER REGISTRATION
+// ============================================================
+
+model PlayerRegistration {
+  id               String             @id @default(uuid()) @db.Uuid
+
+  playerId         String             @map("player_id") @db.Uuid
+  teamId           String             @map("team_id") @db.Uuid
+  seasonId         String             @map("season_id") @db.Uuid
+
+  shirtNumber      Int?               @map("shirt_number")
+  registrationStatus VerificationStatus @default(PENDING) @map("registration_status")
+
+  verifiedBy       String?            @map("verified_by") @db.Uuid
+  verifiedAt       DateTime?          @map("verified_at")
+
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  player           Player             @relation(fields: [playerId], references: [id])
+  team             Team               @relation(fields: [teamId], references: [id])
+  season           Season             @relation(fields: [seasonId], references: [id])
+
+  documents        PlayerDocument[]
+  matchdaySquads   MatchdaySquad[]
+  matchEvents      MatchEvent[]       @relation("EventPlayer")
+  assists          MatchEvent[]       @relation("AssistPlayer")
+
+  @@unique([playerId, teamId, seasonId])
+  @@index([teamId])
+  @@index([seasonId])
+  @@index([registrationStatus])
+  @@map("player_registration")
+}
+
+
+// ============================================================
+// PLAYER DOCUMENT
+// ============================================================
+
+model PlayerDocument {
+  id             String             @id @default(uuid()) @db.Uuid
+
+  registrationId String             @map("registration_id") @db.Uuid
+
+  documentType   DocumentType       @map("document_type")
+  fileUrl        String             @map("file_url")
+
+  status         VerificationStatus @default(PENDING)
+
+  verifiedBy     String?            @map("verified_by") @db.Uuid
+  verifiedAt     DateTime?          @map("verified_at")
+
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  registration   PlayerRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
+  @@index([status])
+  @@map("player_document")
+}
+
+
+// ============================================================
+// GROUND
+// ============================================================
+
+model Ground {
+  id        String   @id @default(uuid()) @db.Uuid
+
+  name      String
+  location  String?
+  address   String?
+  capacity  Int?
+  isActive  Boolean  @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fixtures  Fixture[]
+
+  @@index([isActive])
+  @@map("ground")
+}
+
+
+// ============================================================
+// FIXTURE
+// ============================================================
+
+model Fixture {
+  id          String        @id @default(uuid()) @db.Uuid
+
+  seasonId    String        @map("season_id") @db.Uuid
+  ageGroupId  String        @map("age_group_id") @db.Uuid
+
+  homeTeamId  String        @map("home_team_id") @db.Uuid
+  awayTeamId  String        @map("away_team_id") @db.Uuid
+
+  groundId    String?       @map("ground_id") @db.Uuid
+  refereeId   String?       @map("referee_id") @db.Uuid
+
+  roundNumber Int           @map("round_number")
+
+  scheduledAt DateTime?     @map("scheduled_at")
+  status      FixtureStatus @default(SCHEDULED)
+
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  season      Season        @relation(fields: [seasonId], references: [id])
+  ageGroup    AgeGroup      @relation(fields: [ageGroupId], references: [id])
+
+  homeTeam    Team          @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team          @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  ground      Ground?       @relation(fields: [groundId], references: [id])
+  referee     Referee?      @relation(fields: [refereeId], references: [id])
+
+  match       Match?
+
+  @@index([seasonId])
+  @@index([ageGroupId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([groundId])
+  @@index([refereeId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("fixture")
+}
+
+
+// ============================================================
+// MATCH
+// ============================================================
+
+model Match {
+  id           String      @id @default(uuid()) @db.Uuid
+
+  fixtureId    String      @unique @map("fixture_id") @db.Uuid
+
+  homeScore    Int         @default(0) @map("home_score")
+  awayScore    Int         @default(0) @map("away_score")
+
+  status       MatchStatus
+
+  submittedBy  String?     @map("submitted_by") @db.Uuid
+  notes        String?
+
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  fixture      Fixture     @relation(fields: [fixtureId], references: [id])
+
+  squads       MatchdaySquad[]
+  events       MatchEvent[]
+  forfeits     Forfeit[]
+
+  @@index([status])
+  @@map("match")
+}
+
+
+// ============================================================
+// MATCHDAY SQUAD
+// ============================================================
+
+model MatchdaySquad {
+  id                    String   @id @default(uuid()) @db.Uuid
+
+  matchId               String   @map("match_id") @db.Uuid
+  teamId                String   @map("team_id") @db.Uuid
+  playerRegistrationId  String   @map("player_registration_id") @db.Uuid
+
+  isStarting            Boolean  @default(false) @map("is_starting")
+  isSubstitute          Boolean  @default(false) @map("is_substitute")
+  isGoalkeeper          Boolean  @default(false) @map("is_goalkeeper")
+
+  shirtNumber           Int?     @map("shirt_number")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  match                 Match              @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team                  Team               @relation(fields: [teamId], references: [id])
+  playerRegistration    PlayerRegistration @relation(fields: [playerRegistrationId], references: [id])
+
+  @@unique([matchId, playerRegistrationId])
+  @@index([matchId, teamId])
+  @@index([playerRegistrationId])
+  @@map("matchday_squad")
+}
+
+
+// ============================================================
+// MATCH EVENT
+// ============================================================
+
+model MatchEvent {
+  id                       String          @id @default(uuid()) @db.Uuid
+
+  matchId                  String          @map("match_id") @db.Uuid
+  teamId                   String          @map("team_id") @db.Uuid
+
+  playerRegistrationId     String?         @map("player_registration_id") @db.Uuid
+  assistPlayerRegistrationId String?       @map("assist_player_registration_id") @db.Uuid
+
+  eventType                MatchEventType  @map("event_type")
+  minute                   Int?
+  notes                    String?
+
+  createdAt                DateTime        @default(now()) @map("created_at")
+
+  match                    Match             @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team                     Team              @relation(fields: [teamId], references: [id])
+
+  playerRegistration      PlayerRegistration? @relation("EventPlayer", fields: [playerRegistrationId], references: [id])
+  assistPlayerRegistration PlayerRegistration? @relation("AssistPlayer", fields: [assistPlayerRegistrationId], references: [id])
+
+  @@index([matchId])
+  @@index([teamId])
+  @@index([playerRegistrationId])
+  @@index([eventType])
+  @@map("match_event")
+}
+
+
+// ============================================================
+// FORFEIT
+// ============================================================
+
+model Forfeit {
+  id          String   @id @default(uuid()) @db.Uuid
+
+  matchId     String   @map("match_id") @db.Uuid
+  teamId      String   @map("team_id") @db.Uuid
+
+  reason      String
+  recordedBy  String?  @map("recorded_by") @db.Uuid
+  notes       String?
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  match       Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id])
+
+  @@unique([matchId, teamId])
+  @@index([matchId])
+  @@index([teamId])
+  @@map("forfeit")
+}
+
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+
+  userId      String?     @map("user_id") @db.Uuid
+
+  action      AuditAction
+  entityType  String      @map("entity_type")
+  entityId    String?     @map("entity_id")
+
+  oldValues   Json?       @map("old_values")
+  newValues   Json?       @map("new_values")
+
+  ipAddress   String?     @map("ip_address")
+  userAgent   String?     @map("user_agent")
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_log")
+}
+```
