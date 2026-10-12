@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type Club = {
   id: string;
@@ -51,16 +52,14 @@ export default function ClubProfilePage() {
   }
 
   return (
-    <Container>
-      <div className="py-8">
-        <h1 className="text-2xl font-bold text-kasi-green sm:text-3xl">
-          {club.name}
-        </h1>
-        {club.shortName && (
-          <p className="mt-1 text-sm uppercase tracking-wide text-kasi-muted">
-            {club.shortName}
-          </p>
-        )}
+    <>
+      <PublicPageHeader
+        eyebrow="Registered club"
+        title={club.name}
+        description={club.shortName ?? "Club profile and registered teams"}
+      />
+      <Container>
+        <div className="py-8">
 
         <h2 className="mt-8 text-xl font-bold text-kasi-green">Teams</h2>
         {club.teams.length === 0 ? (
@@ -80,7 +79,8 @@ export default function ClubProfilePage() {
             ))}
           </ul>
         )}
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

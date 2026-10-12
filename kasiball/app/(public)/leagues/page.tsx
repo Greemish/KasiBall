@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { Alert } from "@/components/Alert";
 import { LoadingState } from "@/components/LoadingState";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("en-ZA", {
@@ -38,17 +39,14 @@ export default function LeaguesPage() {
   const activeSeason = seasons.find((season) => season.status === "ACTIVE");
 
   return (
-    <Container>
-      <div className="mx-auto max-w-4xl py-8">
-        <header className="border-b border-kasi-border pb-5">
-          <p className="eyebrow">Competition registry</p>
-          <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">
-            South African grassroots leagues
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-kasi-muted">
-            Browse public KasiBall seasons and open the live competition table for an age group.
-          </p>
-        </header>
+    <>
+      <PublicPageHeader
+        eyebrow="Competition registry"
+        title="South African grassroots leagues"
+        description="Browse public KasiBall seasons and open the live competition table for an age group."
+      />
+      <Container>
+        <div className="mx-auto max-w-4xl py-8">
 
         {error && <div className="mt-5"><Alert level="error">{error}</Alert></div>}
 
@@ -85,7 +83,8 @@ export default function LeaguesPage() {
             </ul>
           </section>
         )}
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

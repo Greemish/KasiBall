@@ -5,12 +5,12 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-12 border-t-4 border-kasi-gold bg-kasi-green text-white">
+    <footer className="border-t-4 border-kasi-gold bg-[#111111] text-white">
       <Container>
         <div className="grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-kasi-gold">
-              KasiBall
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-white">
+              KASI<span className="text-kasi-gold">BALL</span>
             </h2>
             <p className="text-base font-semibold text-white">
               Where Every Dream Starts on the Field.
@@ -79,7 +79,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 py-4 text-sm text-white/80">
+        <div className="border-t border-white/20 py-4 text-xs text-white/60">
           Copyright ©{year} KasiBall. All rights reserved.
         </div>
       </Container>

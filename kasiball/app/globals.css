@@ -22,7 +22,7 @@
 
   /* Panels */
   .card {
-    @apply rounded-lg border border-kasi-border bg-white p-5 shadow-sm;
+    @apply border border-kasi-border bg-white p-4 shadow-sm;
   }
 
   /* Section label */

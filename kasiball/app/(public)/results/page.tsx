@@ -12,6 +12,7 @@ import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type Fixture = {
   id: string;
@@ -79,17 +80,14 @@ function ResultsInner() {
     .reverse();
 
   return (
-    <Container>
-      <div className="py-8">
-        <header className="border-b border-kasi-border pb-5">
-          <p className="eyebrow">KasiBall matchday centre</p>
-          <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">
-            Completed matches &amp; verified scores
-          </h1>
-          <p className="mt-2 text-base text-kasi-muted">
-            Official scores recorded for completed league fixtures.
-          </p>
-        </header>
+    <>
+      <PublicPageHeader
+        eyebrow="KasiBall matchday centre"
+        title="Completed matches & verified scores"
+        description="Official scores recorded for completed league fixtures."
+      />
+      <Container>
+        <div className="py-8">
 
         <div className="mt-4 flex flex-wrap gap-3">
           <select
@@ -144,8 +142,9 @@ function ResultsInner() {
             ))}
           </ul>
         )}
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }
 

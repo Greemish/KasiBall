@@ -8,6 +8,7 @@ import { getDefaultSeason, type PublicSeason } from "@/app/lib/season-context";
 import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type SearchResult = {
   playerId: string;
@@ -71,17 +72,14 @@ function PlayersInner() {
   }, [q]);
 
   return (
-    <Container>
-      <div className="py-8">
-        <header className="border-b border-kasi-border pb-5">
-          <p className="eyebrow">Kasi footballers directory</p>
-          <h1 className="mt-1 max-w-3xl text-2xl font-bold text-kasi-green sm:text-3xl">
-            Verifiably logged South African grassroots footballers
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-kasi-muted">
-            Search public player records by name. Only verified registrations are included in search results.
-          </p>
-        </header>
+    <>
+      <PublicPageHeader
+        eyebrow="Kasi footballers directory"
+        title="Verifiably logged South African grassroots footballers"
+        description="Search public player records by name. Only verified registrations are included in search results."
+      />
+      <Container>
+        <div className="py-8">
 
         <div className="mt-6 max-w-xl">
           <label htmlFor="player-search" className="form-label">Player name</label>
@@ -162,8 +160,9 @@ function PlayersInner() {
             </ol>
           )}
         </section>
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }
 

@@ -9,6 +9,7 @@ import { Alert } from "@/components/Alert";
 import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type SeasonDetail = PublicSeason & { ageGroups: PublicAgeGroup[] };
 
@@ -135,26 +136,24 @@ export default function LeagueSeasonPage() {
   const nextFixture = fixtures.find((fixture) => !isCompleted(fixture));
 
   return (
-    <Container>
-      <div className="mx-auto max-w-5xl py-7">
-        <nav aria-label="Breadcrumb" className="mb-5 text-sm">
+    <>
+      <Container>
+        <nav aria-label="Breadcrumb" className="py-4 text-sm">
           <Link href="/leagues" className="font-medium text-kasi-green underline underline-offset-4">Leagues</Link>
           <span className="px-2 text-kasi-muted">/</span>
           <span className="text-kasi-muted">{season.name}</span>
         </nav>
-
-        <header className="border-b border-kasi-border pb-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="eyebrow">KasiBall league registry</p>
-              <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">{season.name}</h1>
-              <p className="mt-2 text-base text-kasi-muted">
-                {new Date(season.startDate).toLocaleDateString("en-ZA")} - {new Date(season.endDate).toLocaleDateString("en-ZA")}
-              </p>
-            </div>
-            <StatusBadge status={season.status} />
-          </div>
-        </header>
+      </Container>
+      <PublicPageHeader
+        eyebrow="KasiBall league registry"
+        title={season.name}
+        description={`${new Date(season.startDate).toLocaleDateString("en-ZA")} - ${new Date(season.endDate).toLocaleDateString("en-ZA")}`}
+      />
+      <Container>
+        <div className="mx-auto max-w-5xl py-7">
+        <div className="mb-4 flex justify-end">
+          <StatusBadge status={season.status} />
+        </div>
 
         {error && <div className="mt-5"><Alert level="error">{error}</Alert></div>}
 
@@ -269,7 +268,8 @@ export default function LeagueSeasonPage() {
             )}
           </div>
         </section>
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

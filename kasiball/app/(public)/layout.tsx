@@ -11,7 +11,7 @@ export default function PublicLayout({
     <div className="flex min-h-screen flex-col">
       <Banner />
       <Nav />
-      <main id="main" className="flex-1">
+      <main id="main" className="flex-1 bg-kasi-surface">
         {children}
       </main>
       <Footer />

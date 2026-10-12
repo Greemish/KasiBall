@@ -6,6 +6,7 @@ import { api } from "@/app/lib/api";
 import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type Club = {
   id: string;
@@ -30,11 +31,14 @@ export default function ClubsPage() {
   }, []);
 
   return (
-    <Container>
-      <div className="py-8">
-        <h1 className="text-2xl font-bold text-kasi-green sm:text-3xl">
-          Clubs
-        </h1>
+    <>
+      <PublicPageHeader
+        eyebrow="Community directory"
+        title="Registered grassroots clubs"
+        description="Explore clubs and their teams competing in KasiBall leagues."
+      />
+      <Container>
+        <div className="py-8">
 
         {error && <div className="mt-4"><Alert level="error">{error}</Alert></div>}
 
@@ -65,7 +69,8 @@ export default function ClubsPage() {
             ))}
           </div>
         )}
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

@@ -3,26 +3,13 @@ import { Container } from "./Container";
 
 export function Banner() {
   return (
-    <header className="border-b border-kasi-border bg-white">
+    <header className="bg-kasi-green-dark text-white">
       <Container>
-        <div className="flex items-center justify-between gap-4 py-4">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center border-l-4 border-kasi-gold bg-kasi-green text-lg font-bold text-white">
-              KB
-            </span>
-            <span className="flex min-w-0 flex-col leading-tight">
-              <span className="text-xl font-bold text-kasi-green">KasiBall</span>
-              <span className="mt-1 truncate text-xs text-kasi-muted sm:text-sm">
-                Where Every Dream Starts on the Field.
-              </span>
-            </span>
-          </Link>
-
-          <div className="flex shrink-0 items-center gap-2 border-l border-kasi-border pl-4 sm:gap-3 sm:pl-6">
-            <span className="hidden text-right text-xs text-kasi-muted sm:block">
-              South African<br />grassroots football
-            </span>
-            <span role="img" aria-label="South Africa" className="text-2xl">
+        <div className="flex min-h-7 items-center justify-between gap-3 py-1 text-[10px] font-bold uppercase tracking-wide">
+          <p>Where every dream starts on the field.</p>
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline">South African grassroots football</span>
+            <span role="img" aria-label="South Africa" className="text-sm">
               🇿🇦
             </span>
           </div>

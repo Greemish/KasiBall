@@ -13,6 +13,7 @@ import { Container } from "@/components/layout/Container";
 import { Table, type Column } from "@/components/Table";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type StandingsRow = {
   position: number;
@@ -99,17 +100,14 @@ function StandingsInner() {
   ];
 
   return (
-    <Container>
-      <div className="py-8">
-        <header className="border-b border-kasi-border pb-5">
-          <p className="eyebrow">KasiBall competition registry</p>
-          <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">
-            Live grassroots league table
-          </h1>
-          <p className="mt-2 text-base text-kasi-muted">
-            Standings are calculated from recorded match results.
-          </p>
-        </header>
+    <>
+      <PublicPageHeader
+        eyebrow="KasiBall competition registry"
+        title="Live grassroots league table"
+        description="Standings are calculated from recorded match results."
+      />
+      <Container>
+        <div className="py-8">
 
         <div className="mt-4 flex flex-wrap gap-3">
           <select
@@ -149,8 +147,9 @@ function StandingsInner() {
             emptyMessage="No standings yet for this age group."
           />
         </div>
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }
 

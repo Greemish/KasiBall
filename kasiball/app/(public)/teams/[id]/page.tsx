@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
 import { StatusBadge } from "@/components/StatusBadge";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type Team = {
   id: string;
@@ -54,8 +55,8 @@ export default function TeamProfilePage() {
   }
 
   return (
-    <Container>
-      <div className="py-8">
+    <>
+      <Container>
         <nav aria-label="Breadcrumb" className="mb-5 text-sm">
           <Link href="/clubs" className="font-medium text-kasi-green underline underline-offset-4">
             Clubs
@@ -67,26 +68,30 @@ export default function TeamProfilePage() {
           <span className="px-2 text-kasi-muted">/</span>
           <span className="text-kasi-muted">Team</span>
         </nav>
+      </Container>
 
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-kasi-border pb-5">
-          <div className="flex min-w-0 items-center gap-4">
-            {team.logoUrl && (
-              <img
-                src={team.logoUrl}
-                alt={`${team.name} logo`}
-                width={64}
-                height={64}
-                className="h-16 w-16 border border-kasi-border object-contain"
-              />
-            )}
-            <div className="min-w-0">
-              <p className="eyebrow">Verified squad roster</p>
-              <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">{team.name}</h1>
-              <p className="mt-1 text-base text-kasi-muted">{team.club.name} · {team.ageGroup.name}</p>
+      <PublicPageHeader
+        eyebrow="Verified squad roster"
+        title={team.name}
+        description={`${team.club.name} · ${team.ageGroup.name}`}
+      />
+      <Container>
+        <div className="py-8">
+          <div className="mb-5 flex items-center justify-between border border-kasi-border bg-white p-4">
+            <div className="flex min-w-0 items-center gap-4">
+              {team.logoUrl && (
+            <img
+              src={team.logoUrl}
+              alt={`${team.name} logo`}
+              width={64}
+              height={64}
+              className="h-16 w-16 border border-kasi-border object-contain"
+            />
+              )}
+              <p className="text-sm text-kasi-muted">Club squad</p>
             </div>
+            <StatusBadge status={team.status} />
           </div>
-          <StatusBadge status={team.status} />
-        </header>
 
         <div className="mt-8 flex flex-wrap items-end justify-between gap-2 border-b border-kasi-border pb-3">
           <div>
@@ -127,7 +132,8 @@ export default function TeamProfilePage() {
             </table>
           </div>
         )}
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

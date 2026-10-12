@@ -7,6 +7,7 @@ import { api } from "@/app/lib/api";
 import { Container } from "@/components/layout/Container";
 import { LoadingState } from "@/components/LoadingState";
 import { Alert } from "@/components/Alert";
+import { PublicPageHeader } from "@/components/layout/PublicPageHeader";
 
 type StatBlock = {
   matches: number;
@@ -82,17 +83,24 @@ export default function PlayerProfilePage() {
   const t = player.totals;
 
   return (
-    <Container>
-      <div className="py-8">
-        <nav aria-label="Breadcrumb" className="mb-5 text-sm">
+    <>
+      <Container>
+        <nav aria-label="Breadcrumb" className="py-4 text-sm">
           <Link href="/players" className="font-medium text-kasi-green underline underline-offset-4">
             Players directory
           </Link>
           <span className="px-2 text-kasi-muted">/</span>
           <span className="text-kasi-muted">Player profile</span>
         </nav>
-
-        <header className="flex flex-wrap items-center gap-4 border-b border-kasi-border pb-5">
+      </Container>
+      <PublicPageHeader
+        eyebrow="KasiBall talent profile"
+        title={player.name}
+        description={`Age ${player.age} · Public football statistics`}
+      />
+      <Container>
+        <div className="py-8">
+          <div className="mb-6 flex items-center gap-4 border-b border-kasi-border bg-white p-4">
           {player.photoUrl ? (
             <img
               src={player.photoUrl}
@@ -106,14 +114,8 @@ export default function PlayerProfilePage() {
               {player.name.charAt(0)}
             </span>
           )}
-          <div className="min-w-0">
-            <p className="eyebrow">KasiBall talent profile</p>
-            <h1 className="mt-1 text-2xl font-bold text-kasi-green sm:text-3xl">
-              {player.name}
-            </h1>
-            <p className="mt-1 text-base text-kasi-muted">Age {player.age}</p>
+          <p className="text-sm text-kasi-muted">Verified player record</p>
           </div>
-        </header>
 
         <section className="mt-7" aria-labelledby="player-statistics">
           <h2 id="player-statistics" className="text-xl font-bold text-kasi-green">
@@ -181,7 +183,8 @@ export default function PlayerProfilePage() {
             This profile shows football statistics only. Identity documents, birth dates, addresses, phone numbers, school details and guardian contacts are not displayed here.
           </p>
         </section>
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 }

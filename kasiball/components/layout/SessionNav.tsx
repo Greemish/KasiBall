@@ -16,14 +16,14 @@ export function SessionNav() {
   };
 
   if (loading) {
-    return <span className="text-sm text-white/70">…</span>;
+    return <span className="text-sm text-kasi-muted">…</span>;
   }
 
   if (!user) {
     return (
       <Link
         href="/auth/login"
-        className="rounded bg-kasi-gold px-3 py-1.5 text-sm font-semibold text-kasi-ink hover:bg-kasi-gold-dark"
+        className="bg-kasi-gold px-3 py-1.5 text-xs font-bold uppercase text-kasi-ink hover:bg-kasi-gold-dark"
       >
         Log in
       </Link>
@@ -41,7 +41,7 @@ export function SessionNav() {
     <div className="flex items-center gap-3 text-sm">
       <Link
         href={dashboard}
-        className="font-medium text-white hover:text-kasi-gold"
+        className="font-medium text-kasi-green hover:text-kasi-green-dark"
       >
         {user.role === "ADMIN"
           ? "Admin"
@@ -51,7 +51,7 @@ export function SessionNav() {
       </Link>
       <button
         onClick={logout}
-        className="rounded px-2 py-1 text-white/80 hover:bg-kasi-green-dark"
+        className="px-2 py-1 text-kasi-muted hover:bg-kasi-surface"
       >
         Log out
       </button>
